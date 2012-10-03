@@ -1,0 +1,28 @@
+<?xml version="1.0" ?>
+
+<container xmlns="http://symfony.com/schema/dic/services"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://symfony.com/schema/dic/services http://symfony.com/schema/dic/services/services-1.0.xsd">
+
+    <parameters>
+        <parameter key="ruudk_campfire_exception.subdomain"/>
+        <parameter key="ruudk_campfire_exception.token"/>
+        <parameter key="ruudk_campfire_exception.room"/>
+        <parameter key="ruudk_campfire_exception.campfire.class">Ruudk\CampfireExceptionBundle\Campfire</parameter>
+        <parameter key="ruudk_campfire_exception.exception_listener.class">Ruudk\CampfireExceptionBundle\Listener\ExceptionListener</parameter>
+    </parameters>
+
+    <services>
+        <service id="ruudk_campfire_exception.campfire" class="%ruudk_campfire_exception.campfire.class%">
+            <argument>%ruudk_campfire_exception.subdomain%</argument>
+            <argument>%ruudk_campfire_exception.token%</argument>
+            <argument>%ruudk_campfire_exception.room%</argument>
+        </service>
+
+        <service id="ruudk_campfire_exception.exception_listener" class="%ruudk_campfire_exception.exception_listener.class%">
+            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
+            <argument type="service" id="ruudk_campfire_exception.campfire" />
+        </service>
+    </services>
+
+</container>
