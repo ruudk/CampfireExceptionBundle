@@ -58,6 +58,7 @@ class Campfire
         $body = '%s on %s' . PHP_EOL;
         $body .= '%s' . PHP_EOL;
         $body .= 'On %s:%s' . PHP_EOL;
+        $body .= '%s' . PHP_EOL;
 
         $message = array('message' => array(
             'type' => 'TextMessage',
@@ -66,7 +67,8 @@ class Campfire
                 $request->getHost(),
                 $exception->getMessage(),
                 $exception->getFile(),
-                $exception->getLine()
+                $exception->getLine(),
+                $request->getUri()
             ))
         ));
 
