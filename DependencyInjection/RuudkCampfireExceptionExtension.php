@@ -15,14 +15,13 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Symfony\Component\DependencyInjection\Loader;
+use Symfony\Component\DependencyInjection\Definition;
+use Symfony\Component\DependencyInjection\Reference;
 
 class RuudkCampfireExceptionExtension extends Extension
 {
     public function load(array $configs, ContainerBuilder $container)
     {
-        if (empty($configs[0]['subdomain']))
-            return;
-        
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
@@ -39,6 +38,19 @@ class RuudkCampfireExceptionExtension extends Extension
 
         if (isset($config['room'])) {
             $container->setParameter('ruudk_campfire_exception.room', $config['room']);
+        }
+
+        if (isset($config['subdomain'])) {
+            $exceptionListener = new Definition($container->getParameter('ruudk_campfire_exception.exception_listener.class'), array(
+                new Reference('ruudk_campfire_exception.campfire')
+            ));
+
+            $exceptionListener->addTag('kernel.event_listener', array(
+                'event'  => 'kernel.exception',
+                'method' => 'onKernelException'
+            ));
+
+            $container->setDefinition('ruudk_campfire_exception.exception_listener', $exceptionListener);
         }
     }
 }

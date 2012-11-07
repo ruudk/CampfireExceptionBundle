@@ -52,6 +52,9 @@ class Campfire
      */
     public function notifyOnException(Exception $exception, Request $request)
     {
+        if(empty($this->subdomain) || empty($this->token) || empty($this->room))
+            return;
+
         $namespace = explode("\\", get_class($exception));
         $class = array_pop($namespace);
 

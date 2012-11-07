@@ -18,11 +18,6 @@
             <argument>%ruudk_campfire_exception.token%</argument>
             <argument>%ruudk_campfire_exception.room%</argument>
         </service>
-
-        <service id="ruudk_campfire_exception.exception_listener" class="%ruudk_campfire_exception.exception_listener.class%">
-            <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
-            <argument type="service" id="ruudk_campfire_exception.campfire" />
-        </service>
     </services>
 
 </container>
