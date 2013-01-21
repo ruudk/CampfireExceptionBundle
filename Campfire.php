@@ -61,7 +61,7 @@ class Campfire
         $body .= '%s' . PHP_EOL;
 
         $message = array('message' => array(
-            'type' => 'TextMessage',
+            'type' => 'PasteMessage',
             'body' => trim(sprintf($body,
                 $class,
                 $request->getHost(),
