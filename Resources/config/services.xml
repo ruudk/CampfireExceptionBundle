@@ -17,6 +17,7 @@
             <argument>%ruudk_campfire_exception.subdomain%</argument>
             <argument>%ruudk_campfire_exception.token%</argument>
             <argument>%ruudk_campfire_exception.room%</argument>
+            <argument>%ruudk_campfire_exception.application%</argument>
         </service>
 
         <service id="ruudk_campfire_exception.exception_listener" class="%ruudk_campfire_exception.exception_listener.class%">

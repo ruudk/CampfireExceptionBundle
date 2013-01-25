@@ -40,5 +40,9 @@ class RuudkCampfireExceptionExtension extends Extension
         if (isset($config['room'])) {
             $container->setParameter('ruudk_campfire_exception.room', $config['room']);
         }
+
+        if (isset($config['application'])) {
+            $container->setParameter('ruudk_campfire_exception.application', $config['application']);
+        }
     }
 }

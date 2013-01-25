@@ -35,22 +35,29 @@ class Campfire
     protected $room;
 
     /**
+     * @var string
+     */
+    protected $application;
+
+    /**
      * @param string $subdomain
      * @param string $token
      * @param string $room
+     * @param string $application
      */
-    public function __construct($subdomain, $token, $room)
+    public function __construct($subdomain, $token, $room, $application)
     {
         $this->subdomain = $subdomain;
         $this->token = $token;
         $this->room = $room;
+        $this->application = $application;
     }
 
     /**
      * @param \Exception $exception
      * @param \Symfony\Component\HttpFoundation\Request $request
      */
-    public function notifyOnException(Exception $exception, Request $request)
+    public function notifyOnException(Exception $exception, Request $request = null)
     {
         $namespace = explode("\\", get_class($exception));
         $class = array_pop($namespace);
@@ -64,22 +71,22 @@ class Campfire
             'type' => 'PasteMessage',
             'body' => trim(sprintf($body,
                 $class,
-                $request->getHost(),
+                $this->application,
                 $exception->getMessage(),
                 $exception->getFile(),
                 $exception->getLine(),
-                $request->getUri()
+                $request ? $request->getUri() : null
             ))
         ));
 
-        $request = new BuzzRequest('POST', '/room/' . $this->room . '/speak.json', 'https://' . $this->subdomain . '.campfirenow.com');
-        $request->addHeader('Content-type: application/json');
-        $request->addHeader('Authorization: Basic ' . base64_encode($this->token . ':x'));
-        $request->setContent(json_encode($message));
+        $buzzRequest = new BuzzRequest('POST', '/room/' . $this->room . '/speak.json', 'https://' . $this->subdomain . '.campfirenow.com');
+        $buzzRequest->addHeader('Content-type: application/json');
+        $buzzRequest->addHeader('Authorization: Basic ' . base64_encode($this->token . ':x'));
+        $buzzRequest->setContent(json_encode($message));
 
         $response = new BuzzResponse;
 
         $client = new BuzzCurl;
-        $client->send($request, $response);
+        $client->send($buzzRequest, $response);
     }
 }
