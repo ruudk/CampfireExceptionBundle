@@ -35,6 +35,7 @@ Finally, add the following to your config_prod.yml
 # app/config/config_prod.yml
 
 ruudk_campfire_exception:
+    application: # Your Symfony2 application name
     subdomain: # Subdomain
     token: # Campfire API token
     room: # Room ID
