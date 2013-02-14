@@ -66,6 +66,7 @@ class Campfire
         $body .= '%s' . PHP_EOL;
         $body .= 'On %s:%s' . PHP_EOL;
         $body .= '%s' . PHP_EOL;
+        $body .= 'Trace: %s' . PHP_EOL;
 
         $message = array('message' => array(
             'type' => 'PasteMessage',
@@ -75,7 +76,8 @@ class Campfire
                 $exception->getMessage(),
                 $exception->getFile(),
                 $exception->getLine(),
-                $request ? $request->getUri() : null
+                $request ? $request->getUri() : null,
+                $exception->getTraceAsString()
             ))
         ));
 
