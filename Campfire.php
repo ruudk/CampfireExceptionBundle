@@ -68,23 +68,34 @@ class Campfire
         $body .= '%s' . PHP_EOL;
         $body .= 'Trace: %s' . PHP_EOL;
 
-        $message = array('message' => array(
-            'type' => 'PasteMessage',
-            'body' => trim(sprintf($body,
-                $class,
-                $this->application,
-                $exception->getMessage(),
-                $exception->getFile(),
-                $exception->getLine(),
-                $request ? $request->getUri() : null,
-                $exception->getTraceAsString()
-            ))
+        $body = trim(sprintf($body,
+            $class,
+            $this->application,
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
+            $request ? $request->getUri() : null,
+            $exception->getTraceAsString()
         ));
 
+        $this->speak($body, 'PasteMessage');
+    }
+
+    /**
+     * @param string $body
+     * @param string $type
+     */
+    public function speak($body, $type = 'TextMessage')
+    {
         $buzzRequest = new BuzzRequest('POST', '/room/' . $this->room . '/speak.json', 'https://' . $this->subdomain . '.campfirenow.com');
         $buzzRequest->addHeader('Content-type: application/json');
         $buzzRequest->addHeader('Authorization: Basic ' . base64_encode($this->token . ':x'));
-        $buzzRequest->setContent(json_encode($message));
+        $buzzRequest->setContent(json_encode(array(
+            'message' => array(
+                'type' => $type,
+                'body' => $body
+            )
+        )));
 
         $response = new BuzzResponse;
 
