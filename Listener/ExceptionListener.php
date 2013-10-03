@@ -11,6 +11,7 @@
 
 namespace Ruudk\CampfireExceptionBundle\Listener;
 
+use Symfony\Component\Console\Event\ConsoleExceptionEvent;
 use Symfony\Component\HttpKernel\Event\GetResponseForExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ruudk\CampfireExceptionBundle\Campfire;
@@ -35,5 +36,18 @@ class ExceptionListener
             return;
 
         $this->campfire->notifyOnException($exception, $event->getRequest());
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Event\ConsoleExceptionEvent $event
+     */
+    public function onConsoleException(ConsoleExceptionEvent $event)
+    {
+        $this->campfire->notifyOnConsoleException(
+            $event->getInput(),
+            $event->getOutput(),
+            $event->getException(),
+            $event->getExitCode()
+        );
     }
 }

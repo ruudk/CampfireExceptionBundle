@@ -22,6 +22,7 @@
 
         <service id="ruudk_campfire_exception.exception_listener" class="%ruudk_campfire_exception.exception_listener.class%">
             <tag name="kernel.event_listener" event="kernel.exception" method="onKernelException" />
+            <tag name="kernel.event_listener" event="console.exception" method="onConsoleException" />
             <argument type="service" id="ruudk_campfire_exception.campfire" />
         </service>
     </services>

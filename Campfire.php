@@ -12,6 +12,8 @@
 namespace Ruudk\CampfireExceptionBundle;
 
 use Exception;
+use Symfony\Component\Console\Input\Input;
+use Symfony\Component\Console\Output\Output;
 use Symfony\Component\HttpFoundation\Request;
 use Buzz\Message\Request AS BuzzRequest;
 use Buzz\Message\Response AS BuzzResponse;
@@ -75,6 +77,37 @@ class Campfire
             $exception->getFile(),
             $exception->getLine(),
             $request ? $request->getUri() : null,
+            $exception->getTraceAsString()
+        ));
+
+        $this->speak($body, 'PasteMessage');
+    }
+
+    /**
+     * @param \Symfony\Component\Console\Input\Input    $input
+     * @param \Symfony\Component\Console\Output\Output  $output
+     * @param \Exception                                $exception
+     * @param int                                       $exitCode
+     */
+    public function notifyOnConsoleException(Input $input, Output $output, Exception $exception, $exitCode)
+    {
+        $namespace = explode("\\", get_class($exception));
+        $class = array_pop($namespace);
+
+        $body = '%s on %s' . PHP_EOL;
+        $body .= 'While executing console command: %s' . PHP_EOL;
+        $body .= '%s' . PHP_EOL;
+        $body .= 'On %s:%s' . PHP_EOL;
+        $body .= PHP_EOL;
+        $body .= 'Trace: %s' . PHP_EOL;
+
+        $body = trim(sprintf($body,
+            $class,
+            $this->application,
+            (string) $input,
+            $exception->getMessage(),
+            $exception->getFile(),
+            $exception->getLine(),
             $exception->getTraceAsString()
         ));
 
