@@ -61,24 +61,51 @@ class Campfire
      */
     public function notifyOnException(Exception $exception, Request $request = null)
     {
-        $namespace = explode("\\", get_class($exception));
-        $class = array_pop($namespace);
+        /**
+         * Display the URL where the exception is thrown
+         */
+        if($request) {
+            $body = sprintf(
+                "%s: %s\r\n\r\n",
+                $this->application,
+                $request->getUri()
+            );
+        } else {
+            $body = sprintf(
+                "%s\r\n\r\n",
+                $this->application
+            );
+        }
 
-        $body = '%s on %s' . PHP_EOL;
-        $body .= '%s' . PHP_EOL;
-        $body .= 'On %s:%s' . PHP_EOL;
-        $body .= '%s' . PHP_EOL;
-        $body .= 'Trace: %s' . PHP_EOL;
-
-        $body = trim(sprintf($body,
-            $class,
-            $this->application,
+        /**
+         * Display the exception
+         */
+        $class = explode("\\", get_class($exception));
+        $body .= sprintf("%s: %s\r\nOn %s:%s\r\n\r\n",
+            end($class),
             $exception->getMessage(),
             $exception->getFile(),
-            $exception->getLine(),
-            $request ? $request->getUri() : null,
-            $exception->getTraceAsString()
-        ));
+            $exception->getLine()
+        );
+
+        /**
+         * Display the previous exceptions
+         */
+        $previous = $exception;
+        while(null !== $previous = $previous->getPrevious()) {
+            $class = explode("\\", get_class($previous));
+            $body .= sprintf("%s: %s\r\nOn %s:%s\r\n\r\n",
+                end($class),
+                $previous->getMessage(),
+                $previous->getFile(),
+                $previous->getLine()
+            );
+        }
+
+        /**
+         * Display the trace
+         */
+        $body .= $exception->getTraceAsString();
 
         $this->speak($body, 'PasteMessage');
     }
@@ -91,25 +118,41 @@ class Campfire
      */
     public function notifyOnConsoleException(Input $input, Output $output, Exception $exception, $exitCode)
     {
-        $namespace = explode("\\", get_class($exception));
-        $class = array_pop($namespace);
-
-        $body = '%s on %s' . PHP_EOL;
-        $body .= 'While executing console command: %s' . PHP_EOL;
-        $body .= '%s' . PHP_EOL;
-        $body .= 'On %s:%s' . PHP_EOL;
-        $body .= PHP_EOL;
-        $body .= 'Trace: %s' . PHP_EOL;
-
-        $body = trim(sprintf($body,
-            $class,
+        $body = sprintf(
+            "%s: Command: %s\r\n\r\n",
             $this->application,
-            (string) $input,
+            (string) $input
+        );
+
+        /**
+         * Display the exception
+         */
+        $class = explode("\\", get_class($exception));
+        $body .= sprintf("%s: %s\r\nOn %s:%s\r\n\r\n",
+            end($class),
             $exception->getMessage(),
             $exception->getFile(),
-            $exception->getLine(),
-            $exception->getTraceAsString()
-        ));
+            $exception->getLine()
+        );
+
+        /**
+         * Display the previous exceptions
+         */
+        $previous = $exception;
+        while(null !== $previous = $previous->getPrevious()) {
+            $class = explode("\\", get_class($previous));
+            $body .= sprintf("%s: %s\r\nOn %s:%s\r\n\r\n",
+                end($class),
+                $previous->getMessage(),
+                $previous->getFile(),
+                $previous->getLine()
+            );
+        }
+
+        /**
+         * Display the trace
+         */
+        $body .= $exception->getTraceAsString();
 
         $this->speak($body, 'PasteMessage');
     }
